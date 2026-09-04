@@ -3,252 +3,400 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#D9E1DB">
-<title>Rhythm Lab — Dashboard Edition</title>
-
+<meta name="theme-color" content="#07111f">
+<title>Rhythm Pattern Simulator Mobile</title>
 <style>
 :root{
-  --canvas:#D9E1DB;
-  --paper:#F7F9F6;
-  --paper-2:#EEF2ED;
-  --ink:#060807;
-  --muted:#64766A;
-  --muted-2:#A6B1A9;
-  --forest:#364A3B;
-  --lime:#DAF64C;
-  --olive:#A4AF45;
-  --line:rgba(6,8,7,.10);
-  --kick:#DAF64C;
-  --snare:#64766A;
-  --hat:#A4AF45;
-  --success:#364A3B;
+  --bg:#050814;
+  --panel:#0b1220;
+  --line:#1d2a3f;
+  --text:#eef6ff;
+  --muted:#8ca0bd;
+  --cyan:#35e7ff;
+  --pink:#ff55d7;
+  --gold:#ffc15a;
+  --green:#67ffb0;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{
-  margin:0;min-height:100%;background:var(--canvas);color:var(--ink);
-  font-family:Inter,"SF Pro Text","SF Pro Display","Helvetica Neue","Avenir Next",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-}
-body{
+  margin:0;
+  min-height:100%;
   background:
-    radial-gradient(circle at 8% 0%,rgba(255,255,255,.60),transparent 28%),
-    linear-gradient(180deg,#E3E9E4 0%,var(--canvas) 100%);
+    radial-gradient(circle at 15% 0%,rgba(47,98,255,.20),transparent 34%),
+    radial-gradient(circle at 90% 10%,rgba(255,50,196,.15),transparent 28%),
+    var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
 }
-body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
-button,input{font:inherit}
+button,select,input{font:inherit}
 button{touch-action:manipulation}
 .app{
-  width:min(760px,100%);margin:auto;
-  padding:14px 12px calc(30px + env(safe-area-inset-bottom));
+  width:min(680px,100%);
+  margin:auto;
+  padding:18px 12px calc(28px + env(safe-area-inset-bottom));
 }
-.topbar{
-  display:flex;justify-content:space-between;align-items:center;gap:14px;
-  padding:4px 2px 14px;
+header{margin:6px 4px 16px}
+.kicker{
+  color:var(--cyan);
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.14em;
+  text-transform:uppercase;
 }
-.brand{display:flex;align-items:center;gap:11px}
-.brand:before{
-  content:"R";width:40px;height:40px;border-radius:13px;
-  display:grid;place-items:center;background:var(--ink);color:var(--lime);
-  font-size:17px;font-weight:500;letter-spacing:-.04em;
-  box-shadow:0 6px 18px rgba(6,8,7,.10);
+h1{
+  margin:4px 0 5px;
+  font-size:clamp(28px,8vw,42px);
+  letter-spacing:-.04em;
+  line-height:1;
 }
-.brand h1{font-size:26px;line-height:1;margin:0;letter-spacing:-.05em;font-weight:500}
-.brand p{margin:4px 0 0;color:var(--muted);font-size:10px;font-weight:400;letter-spacing:.025em}
-
-.beat-orb-wrap{
-  display:flex;align-items:center;gap:9px;
-  background:rgba(247,249,246,.72);border:1px solid rgba(6,8,7,.08);
-  padding:6px 8px 6px 6px;border-radius:16px;
+header p{
+  margin:0;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.5;
 }
-.beat-orb{
-  width:42px;height:42px;border-radius:13px;border:0;
-  background:var(--lime);display:grid;place-items:center;
-  box-shadow:inset 0 0 0 1px rgba(6,8,7,.07);
-  transition:.10s cubic-bezier(.2,.8,.2,1);
-}
-.beat-orb.on{
-  transform:scale(.92);
-  background:#E4FF62;
-  box-shadow:0 0 0 5px rgba(218,246,76,.24),inset 0 0 0 1px rgba(6,8,7,.08);
-}
-.beat-orb strong{font-size:15px;font-weight:500;color:var(--ink)}
-.orb-info{font-size:9px;color:var(--muted);line-height:1.25;font-weight:400}
-.orb-info b{display:block;color:var(--ink);font-size:10px;font-weight:500}
-
 .panel{
-  position:relative;background:rgba(247,249,246,.94);
-  border:1px solid rgba(6,8,7,.08);border-radius:22px;padding:14px;margin-bottom:10px;
-  box-shadow:0 7px 24px rgba(54,74,59,.065);overflow:hidden;
+  background:linear-gradient(180deg,rgba(13,24,43,.96),rgba(7,13,25,.96));
+  border:1px solid rgba(120,160,220,.16);
+  border-radius:18px;
+  padding:14px;
+  margin-bottom:12px;
+  box-shadow:0 18px 45px rgba(0,0,0,.24);
 }
-.panel:first-of-type{
-  background:var(--ink);color:#fff;border-color:var(--ink);
-  box-shadow:0 11px 30px rgba(6,8,7,.14);
+.transport{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
 }
-.panel:first-of-type .tempo label{color:#A6B1A9}
-.panel:first-of-type .tempo-value{color:#fff}
-.panel:first-of-type .tempo input{accent-color:var(--lime)}
-
-.transport{display:grid;grid-template-columns:1.25fr .75fr;gap:8px}
 .btn{
-  min-height:48px;border-radius:14px;border:1px solid rgba(255,255,255,.12);
-  background:#171B19;color:white;font-weight:500;letter-spacing:-.01em;
-  display:flex;align-items:center;justify-content:center;gap:8px;
-  transition:transform .12s ease,background .12s ease;
+  min-height:48px;
+  border:1px solid rgba(255,255,255,.10);
+  background:#101b2e;
+  color:var(--text);
+  border-radius:13px;
+  font-weight:900;
 }
-.btn:active{transform:scale(.98)}
 .btn.primary{
-  background:var(--lime);color:var(--ink);border-color:var(--lime);
-  box-shadow:none;
+  color:#02131b;
+  background:linear-gradient(135deg,#28cfff,#54f1ff);
+  box-shadow:0 0 24px rgba(53,231,255,.20);
 }
-.btn.primary:before{
-  content:"";width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:8px solid var(--ink);
+.controls{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:12px;
+  margin-top:12px;
 }
-#stopBtn:before{
-  content:"";width:9px;height:9px;border-radius:2px;background:currentColor;opacity:.95;
+.control-row{
+  display:grid;
+  grid-template-columns:76px 1fr auto;
+  align-items:center;
+  gap:10px;
 }
-
-.tempo{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;margin-top:12px}
-.tempo label{
-  font-size:9px;color:var(--muted);font-weight:600;letter-spacing:.12em
+.control-row label{
+  color:var(--muted);
+  font-size:11px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.08em;
 }
-.tempo input{width:100%}
-.tempo-value{font-weight:600;font-size:13px;min-width:65px;text-align:right}
-
-.section-title{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
-.section-title h2{
-  display:flex;align-items:center;gap:7px;font-size:12px;letter-spacing:-.012em;
-  margin:0;color:var(--ink);font-weight:500;text-transform:none;
+.control-row input{width:100%;accent-color:var(--cyan)}
+.value{
+  min-width:68px;
+  text-align:right;
+  font-weight:950;
 }
-.section-title h2:before{
-  content:"";width:22px;height:22px;border-radius:7px;background:var(--paper-2);
-  border:1px solid var(--line);box-shadow:inset 0 0 0 5px var(--paper);
+.selects{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
 }
-.panel:nth-of-type(2) .section-title h2:before{
-  background:var(--lime);box-shadow:inset 0 0 0 7px var(--lime);
+.select-box label{
+  display:block;
+  margin:0 0 6px 2px;
+  color:var(--muted);
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.08em;
+  text-transform:uppercase;
 }
-.panel:nth-of-type(3) .section-title h2:before{
-  background:var(--forest);box-shadow:inset 0 0 0 7px var(--forest);
+select{
+  width:100%;
+  min-height:46px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.10);
+  color:var(--text);
+  background:#081324;
+  padding:0 10px;
 }
-.section-title span{font-size:9px;color:var(--muted);font-weight:400}
-
-.hscroll{display:flex;gap:7px;overflow-x:auto;padding:1px 0 3px;scrollbar-width:none}
-.hscroll::-webkit-scrollbar{display:none}
-.chip{
-  flex:0 0 auto;border:1px solid rgba(6,8,7,.09);background:#EEF2ED;color:#536358;
-  padding:9px 12px;border-radius:11px;font-size:10px;font-weight:450;white-space:nowrap;
-  transition:.12s ease;
-}
-.chip.active{
-  color:#fff;border-color:var(--forest);background:var(--forest);
-  box-shadow:none;
-}
-.chip:active{transform:scale(.97)}
-
-.kit-card{
-  position:relative;flex:0 0 132px;border:1px solid rgba(6,8,7,.09);
-  background:#EEF2ED;border-radius:15px;padding:11px 11px 12px;text-align:left;color:var(--ink);
-  min-height:72px;transition:.12s ease;
-}
-.kit-card:before{
-  content:"♪";display:grid;place-items:center;width:25px;height:25px;border-radius:8px;
-  background:#D9E1DB;color:var(--forest);font-weight:500;font-size:13px;margin-bottom:9px;
-}
-.kit-card.active{
-  border-color:var(--ink);background:var(--ink);color:#fff;box-shadow:none;
-}
-.kit-card.active:before{background:var(--lime);color:var(--ink)}
-.kit-card b{display:block;font-size:10px;line-height:1.2;font-weight:500}
-.kit-card small{display:block;color:var(--muted);font-size:8px;line-height:1.35;margin-top:4px;font-weight:600}
-.kit-card.active small{color:#A6B1A9}
-
-.preview-row{display:flex;gap:6px;margin-top:9px}
-.preview-btn{
-  flex:1;border:1px solid rgba(6,8,7,.08);background:#F1F4F0;color:var(--forest);
-  border-radius:10px;padding:8px 5px;font-size:8px;font-weight:500;
-}
-.preview-btn:active{background:#E5EAE5}
-
-/* sequencer dashboard */
-.panel:nth-of-type(4){
-  background:#F8FAF7;padding:15px 14px 13px;
-}
-.grid-wrap{position:relative}
-.counts,.track-grid{display:grid;grid-template-columns:58px repeat(16,1fr);gap:4px}
-.counts{margin-bottom:6px}
-.counts .blank{grid-column:1}
-.count{
-  font-size:7px;color:#9AA69D;text-align:center;font-weight:550;padding:2px 0
-}
-.count.main{color:var(--ink);font-size:8px;font-weight:500}
-.track{margin-bottom:9px}
+.track{margin-bottom:14px}
 .track:last-child{margin-bottom:0}
+.track-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:8px;
+}
 .track-name{
-  display:flex;align-items:center;gap:6px;font-size:9px;font-weight:500;color:var(--ink)
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-weight:950;
 }
-.dot{width:8px;height:8px;border-radius:3px;box-shadow:none}
-.kick .dot{background:var(--kick)}
-.snare .dot{background:var(--snare)}
-.hihat .dot{background:var(--hat)}
+.dot{
+  width:10px;height:10px;border-radius:50%;
+  box-shadow:0 0 14px currentColor;
+}
+.kick .dot{color:var(--cyan);background:var(--cyan)}
+.snare .dot{color:var(--pink);background:var(--pink)}
+.hihat .dot{color:var(--gold);background:var(--gold)}
+.preview{
+  border:1px solid rgba(255,255,255,.10);
+  background:#0d192b;
+  color:#dce8fb;
+  border-radius:10px;
+  padding:7px 10px;
+  font-size:11px;
+  font-weight:800;
+}
+.beat-row{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:7px;
+}
+.beat-group{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:4px;
+  padding:5px;
+  border-radius:10px;
+  background:rgba(255,255,255,.025);
+  border:1px solid rgba(255,255,255,.045);
+}
 .step{
-  position:relative;aspect-ratio:1/1;min-height:25px;border:1px solid rgba(6,8,7,.075);
-  border-radius:7px;background:#E9EEEA;padding:0;
-  transition:transform .08s ease,background .08s ease,border-color .08s ease;
+  aspect-ratio:1/1;
+  min-height:33px;
+  border:1px solid rgba(150,175,220,.14);
+  border-radius:8px;
+  background:linear-gradient(180deg,#132039,#0b1323);
 }
-.step:active{transform:scale(.90)}
-.step.beat-start{
-  border-left-color:rgba(6,8,7,.30);border-left-width:2px
+.kick .step.active{
+  background:linear-gradient(180deg,rgba(53,231,255,.82),rgba(20,100,138,.70));
+  border-color:var(--cyan);
+  box-shadow:0 0 15px rgba(53,231,255,.18);
 }
-.kick .step.active{background:var(--kick);border-color:#C8E438}
-.snare .step.active{background:var(--snare);border-color:var(--snare)}
-.hihat .step.active{background:var(--hat);border-color:var(--hat)}
+.snare .step.active{
+  background:linear-gradient(180deg,rgba(255,85,215,.80),rgba(105,32,97,.72));
+  border-color:var(--pink);
+  box-shadow:0 0 15px rgba(255,85,215,.16);
+}
+.hihat .step.active{
+  background:linear-gradient(180deg,rgba(255,193,90,.82),rgba(118,77,24,.70));
+  border-color:var(--gold);
+  box-shadow:0 0 15px rgba(255,193,90,.15);
+}
 .step.playing{
-  border-color:var(--ink)!important;
-  box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--ink)!important;
-  transform:scale(1.03);z-index:3;
+  border-color:white!important;
+  transform:scale(1.06);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.8),
+    0 0 18px rgba(53,231,255,.95),
+    0 0 34px rgba(82,102,255,.55)!important;
 }
-.scanline{
-  position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--ink);
-  box-shadow:none;pointer-events:none;opacity:0;z-index:4;transition:left .05s linear
+.counts{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:7px;
+  margin-bottom:6px;
 }
-.scanline:before{
-  content:"";position:absolute;top:-4px;left:50%;width:8px;height:8px;border-radius:50%;
-  transform:translateX(-50%);background:var(--lime);border:2px solid var(--ink)
+.counts>div{
+  text-align:center;
+  color:#8da3c4;
+  font-size:10px;
+  font-weight:800;
 }
-.scanline.show{opacity:.92}
 .status{
-  display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:11px;
-  color:var(--muted);font-size:8px;font-weight:500;border-top:1px solid var(--line);padding-top:9px
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  color:var(--muted);
+  font-size:11px;
+  margin-top:12px;
 }
-.status strong{
-  color:var(--forest);background:#E7EDE8;border-radius:999px;padding:4px 7px;font-size:7px;letter-spacing:.05em
+.status strong{color:var(--green)}
+.pulse{
+  width:10px;height:10px;border-radius:50%;
+  background:#233550;
+  transition:.08s;
+}
+.pulse.on{
+  background:var(--green);
+  box-shadow:0 0 12px var(--green),0 0 28px rgba(103,255,176,.65);
+}
+.small-note{
+  color:#7488a7;
+  font-size:10px;
+  line-height:1.45;
+  margin-top:9px;
+}
+details{
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.5;
+}
+summary{
+  color:#c9d8ed;
+  cursor:pointer;
+  font-weight:800;
+}
+@media (max-width:390px){
+  .app{padding-left:9px;padding-right:9px}
+  .panel{padding:11px;border-radius:15px}
+  .selects{grid-template-columns:1fr}
+  .step{min-height:30px;border-radius:7px}
+  .beat-row,.counts{gap:5px}
+  .beat-group{gap:3px;padding:4px}
+}
+</style>
+
+<style id="fit-screen-override">
+*{min-width:0}
+html,body{
+  width:100%;
+  height:100%;
+  min-height:100%;
+  overflow:hidden!important;
+  overscroll-behavior:none;
+}
+body{
+  min-height:100svh;
+  min-height:100dvh;
+}
+.app{
+  width:min(680px,100%);
+  height:100svh;
+  height:100dvh;
+  max-height:100dvh;
+  overflow:hidden!important;
+  padding:max(6px,env(safe-area-inset-top)) 8px max(6px,env(safe-area-inset-bottom));
+  display:grid;
+  grid-template-rows:auto auto minmax(0,1fr) auto;
+  gap:6px;
+}
+header{margin:0 3px 4px}
+.kicker{font-size:clamp(8px,1.15vh,10px)}
+h1{margin:2px 0;font-size:clamp(21px,4vh,32px);line-height:.96}
+header p{font-size:clamp(9px,1.35vh,11px);line-height:1.2}
+.panel{
+  margin:0;
+  padding:9px;
+  border-radius:13px;
+  overflow:hidden;
+}
+.transport{gap:6px}
+.btn{min-height:36px;font-size:11px;border-radius:10px}
+.controls{gap:6px;margin-top:6px}
+.control-row{grid-template-columns:54px minmax(0,1fr) 60px;gap:6px}
+.control-row label{font-size:8px}
+.value{min-width:0;font-size:9px}
+.selects{gap:6px}
+.select-box label{margin-bottom:3px;font-size:8px}
+select{min-height:32px;font-size:9px;padding:0 7px;border-radius:8px}
+
+/* Pattern always fits available width */
+.app>section:nth-of-type(2){
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.counts,
+.beat-row{
+  width:100%;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:3px!important;
+  overflow:hidden;
+}
+.counts{margin-bottom:3px}
+.counts>div{
+  font-size:clamp(7px,1vh,9px);
+  white-space:nowrap;
+}
+.track{margin-bottom:clamp(4px,.8vh,7px)}
+.track:last-child{margin-bottom:0}
+.track-head{margin-bottom:3px;min-height:22px}
+.track-name{font-size:clamp(9px,1.25vh,11px);gap:5px}
+.dot{width:7px;height:7px}
+.preview{padding:4px 7px;font-size:8px;border-radius:7px}
+.beat-group{
+  width:100%;
+  min-width:0;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:2px!important;
+  padding:2px!important;
+  border-radius:7px;
+  overflow:hidden;
+}
+.step{
+  width:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  aspect-ratio:1/1;
+  padding:0;
+  border-radius:clamp(3px,1.5vw,6px);
+}
+.status{margin-top:4px;font-size:8px}
+.pulse{width:7px;height:7px}
+.small-note{margin-top:3px;font-size:7px;line-height:1.2}
+.app>section:nth-of-type(3){padding:6px 9px}
+details{font-size:8px;line-height:1.2}
+details p{margin:4px 0 0}
+
+/* Narrow phones */
+@media(max-width:420px){
+  .app{padding-left:5px;padding-right:5px;gap:4px}
+  .panel{padding:6px;border-radius:10px}
+  header p{display:none}
+  .btn{min-height:32px}
+  .controls{margin-top:4px;gap:4px}
+  .control-row{grid-template-columns:48px minmax(0,1fr) 54px;gap:4px}
+  select{min-height:29px}
+  .selects{gap:4px}
+  .track-head{min-height:19px;margin-bottom:2px}
+  .preview{padding:3px 5px}
+  .counts,.beat-row{gap:2px!important}
+  .beat-group{gap:1px!important;padding:2px!important}
+  .small-note{display:none}
 }
 
-details{font-size:9px;color:var(--muted);line-height:1.5}
-summary{color:var(--ink);font-weight:600;cursor:pointer}
-.note{color:#738177;font-size:8px;line-height:1.45;margin-top:8px}
-
-@media(hover:hover){
-  .chip:hover,.kit-card:hover,.preview-btn:hover{transform:translateY(-1px)}
+/* Short displays: keep main workflow, remove nonessential credits */
+@media(max-height:650px){
+  .app{grid-template-rows:auto auto minmax(0,1fr)}
+  .app>section:nth-of-type(3){display:none}
+  header p{display:none}
+  h1{font-size:clamp(19px,3.4vh,25px)}
+  .panel{padding:6px}
+  .btn{min-height:30px}
+  .controls{margin-top:4px;gap:3px}
+  select{min-height:28px}
+  .track{margin-bottom:3px}
+  .track-head{min-height:18px}
+  .small-note{display:none}
 }
 
-@media(max-width:430px){
-  .app{padding-left:7px;padding-right:7px}
-  .topbar{gap:8px}
-  .brand:before{width:35px;height:35px;border-radius:11px;font-size:15px}
-  .brand h1{font-size:23px}
-  .beat-orb-wrap{padding-right:7px}
-  .orb-info{display:none}
-  .panel{padding:11px;border-radius:18px}
-  .counts,.track-grid{grid-template-columns:48px repeat(16,1fr);gap:2px}
-  .step{min-height:22px;border-radius:5px}
-  .count{font-size:6px}
-  .count.main{font-size:7px}
-  .kit-card{flex-basis:118px}
-}
-
-@media(max-width:350px){
-  .counts,.track-grid{grid-template-columns:43px repeat(16,1fr);gap:1px}
-  .step{min-height:20px}
-  .track-name{font-size:8px}
+/* Landscape phones */
+@media(orientation:landscape) and (max-height:520px){
+  .app{
+    max-width:960px;
+    grid-template-columns:220px minmax(0,1fr);
+    grid-template-rows:auto minmax(0,1fr);
+  }
+  header{grid-column:1;grid-row:1;align-self:end}
+  .app>section:nth-of-type(1){grid-column:1;grid-row:2}
+  .app>section:nth-of-type(2){grid-column:2;grid-row:1 / span 2}
+  .app>section:nth-of-type(3){display:none}
+  .selects{grid-template-columns:1fr}
 }
 </style>
 
@@ -256,211 +404,425 @@ summary{color:var(--ink);font-weight:600;cursor:pointer}
 <body>
 <div class="app">
 
-<header class="topbar">
-  <div class="brand">
-    <h1>Rhythm Lab</h1>
-    <p>Beat pattern workspace</p>
-  </div>
-  <div class="beat-orb-wrap">
-    <div class="beat-orb" id="beatOrb"><strong id="beatOrbNum">1</strong></div>
-    <div class="orb-info"><b id="orbTempo">104 BPM</b>Quarter-note pulse</div>
-  </div>
+<header>
+  <div class="kicker">Mobile Music Lab</div>
+  <h1>Rhythm Pattern</h1>
+  <p>แตะช่องเพื่อสร้าง groove แล้วกด Play เพื่อฟังทันที</p>
 </header>
 
 <section class="panel">
   <div class="transport">
-    <button type="button" class="btn primary" id="playBtn">PLAY</button>
-    <button type="button" class="btn" id="stopBtn">STOP</button>
+    <button type="button" class="btn primary" id="playBtn">▶ PLAY</button>
+    <button type="button" class="btn" id="stopBtn">■ STOP</button>
   </div>
-  <div class="tempo">
-    <label>TEMPO</label>
-    <input id="tempo" type="range" min="60" max="180" value="104" step="1">
-    <div class="tempo-value"><span id="tempoValue">104</span> BPM</div>
+
+  <div class="controls">
+    <div class="control-row">
+      <label for="tempo">Tempo</label>
+      <input id="tempo" type="range" min="60" max="180" step="1" value="104">
+      <div class="value"><span id="tempoValue">104</span> BPM</div>
+    </div>
+
+    <div class="selects">
+      <div class="select-box">
+        <label for="presetSelect">Groove</label>
+        <select id="presetSelect"></select>
+      </div>
+      <div class="select-box">
+        <label for="kitSelect">Sound Kit</label>
+        <select id="kitSelect"></select>
+      </div>
+    </div>
   </div>
 </section>
 
 <section class="panel">
-  <div class="section-title"><h2>Groove Presets</h2><span>Swipe to browse</span></div>
-  <div class="hscroll" id="presetList"></div>
-</section>
-
-<section class="panel">
-  <div class="section-title"><h2>Sound Kit</h2><span>Reference timbre</span></div>
-  <div class="hscroll" id="kitList"></div>
-  <div class="preview-row">
-    <button type="button" class="preview-btn" data-preview="kick">Preview Kick</button>
-    <button type="button" class="preview-btn" data-preview="snare">Preview Snare</button>
-    <button type="button" class="preview-btn" data-preview="hihat">Preview Hat</button>
+  <div class="counts">
+    <div>1 e & a</div>
+    <div>2 e & a</div>
+    <div>3 e & a</div>
+    <div>4 e & a</div>
   </div>
-</section>
 
-<section class="panel">
-  <div class="grid-wrap" id="gridWrap">
-    <div class="counts" id="counts"></div>
-
-    <div class="track kick" data-track="kick">
-      <div class="track-grid">
-        <div class="track-name"><span class="dot"></span>Kick</div>
-      </div>
+  <div class="track kick" data-track="kick">
+    <div class="track-head">
+      <div class="track-name"><span class="dot"></span>Kick</div>
+      <button type="button" class="preview" data-preview="kick">Preview</button>
     </div>
+    <div class="beat-row"></div>
+  </div>
 
-    <div class="track snare" data-track="snare">
-      <div class="track-grid">
-        <div class="track-name"><span class="dot"></span>Snare</div>
-      </div>
+  <div class="track snare" data-track="snare">
+    <div class="track-head">
+      <div class="track-name"><span class="dot"></span>Snare</div>
+      <button type="button" class="preview" data-preview="snare">Preview</button>
     </div>
+    <div class="beat-row"></div>
+  </div>
 
-    <div class="track hihat" data-track="hihat">
-      <div class="track-grid">
-        <div class="track-name"><span class="dot"></span>Hi-hat</div>
-      </div>
+  <div class="track hihat" data-track="hihat">
+    <div class="track-head">
+      <div class="track-name"><span class="dot"></span>Hi-hat</div>
+      <button type="button" class="preview" data-preview="hihat">Preview</button>
     </div>
-
-    <div class="scanline" id="scanline"></div>
+    <div class="beat-row"></div>
   </div>
 
   <div class="status">
     <div><strong id="statusText">READY</strong> · <span id="stepText">Beat 1</span></div>
-    <div id="kitText">Studio Acoustic</div>
+    <span class="pulse" id="pulse"></span>
+  </div>
+
+  <div class="small-note">
+    ใช้ sample จริงจากแหล่งที่เปิดให้ใช้งานได้ โปรแกรมต้องเชื่อมต่ออินเทอร์เน็ตเพื่อโหลดเสียง
   </div>
 </section>
 
 <section class="panel">
   <details>
-    <summary>Sound sources</summary>
-    <p>Pearl Master Studio (CC BY 3.0) · TR-808 Fischer (CC0) · LinnDrum LM-2 (Public Domain) · TR-909 Detroit used as a historical timbral reference.</p>
+    <summary>เกี่ยวกับชุดเสียง</summary>
+    <p>
+      Acoustic = Pearl Master Studio (CC BY 3.0) ·
+      TR-808 Fischer = CC0 ·
+      LinnDrum LM-2 = Public Domain ·
+      TR-909 Detroit ใช้เป็น reference สำหรับ house/techno
+    </p>
   </details>
-  <div class="note">Grooves are simplified learning archetypes, not fixed formulas for each genre. Internet connection is required for sample playback.</div>
 </section>
 
 </div>
 
 <script>
-const $=id=>document.getElementById(id);
-const tracks={kick:Array(16).fill(false),snare:Array(16).fill(false),hihat:Array(16).fill(false)};
-const kits={
- acoustic:{label:"Studio Acoustic",sub:"Rock · Pop · Funk",samples:{
-  kick:["https://oramics.github.io/sampled/DRUMS/pearl-master-studio/samples/kick-01.wav"],
-  snare:["https://oramics.github.io/sampled/DRUMS/pearl-master-studio/samples/snare-01.wav","https://oramics.github.io/sampled/DRUMS/pearl-master-studio/samples/snare-02.wav","https://oramics.github.io/sampled/DRUMS/pearl-master-studio/samples/snare-03.wav"],
-  hihat:["https://oramics.github.io/sampled/DRUMS/pearl-master-studio/samples/hihat-closed.wav"]},gains:{kick:.9,snare:.72,hihat:.48}},
- tr808:{label:"Classic 808",sub:"Hip-hop · Electro · Trap",samples:{
-  kick:["https://cdn.jsdelivr.net/gh/tidalcycles/sounds-tr808-fischer@main/bd8/BD5050.WAV"],
-  snare:["https://cdn.jsdelivr.net/gh/tidalcycles/sounds-tr808-fischer@main/sd8/SD5050.WAV"],
-  hihat:["https://cdn.jsdelivr.net/gh/tidalcycles/sounds-tr808-fischer@main/ch8/CH.WAV"]},gains:{kick:.95,snare:.72,hihat:.48}},
- tr909:{label:"909 Reference",sub:"House · Techno",samples:{
-  kick:["https://oramics.github.io/sampled/DM/TR-909/Detroit/samples/kick.wav"],
-  snare:["https://oramics.github.io/sampled/DM/TR-909/Detroit/samples/snare.wav"],
-  hihat:["https://oramics.github.io/sampled/DM/TR-909/Detroit/samples/hihat-closed.wav"]},gains:{kick:.86,snare:.64,hihat:.4}},
- lm2:{label:"LinnDrum LM-2",sub:"1980s Pop",samples:{
-  kick:["https://oramics.github.io/sampled/DM/LM-2/samples/kick.wav"],
-  snare:["https://oramics.github.io/sampled/DM/LM-2/samples/snare-m.wav","https://oramics.github.io/sampled/DM/LM-2/samples/snare-h.wav"],
-  hihat:["https://oramics.github.io/sampled/DM/LM-2/samples/hihat-closed.wav"]},gains:{kick:.86,snare:.68,hihat:.42}}
-};
-const presets={
- rock:{label:"Rock",bpm:104,kit:"acoustic",kick:[1,0,0,0,0,0,1,0,1,0,0,0,0,0,1,0],snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
- funk:{label:"Funk",bpm:100,kit:"acoustic",kick:[1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1],snare:[0,0,0,0,1,0,0,1,0,0,0,0,1,0,1,0],hihat:[1,1,1,1,1,0,1,1,1,1,1,1,1,0,1,1]},
- disco:{label:"Disco",bpm:120,kit:"acoustic",kick:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],hihat:[0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0]},
- boom:{label:"Boom Bap",bpm:92,kit:"acoustic",kick:[1,0,0,0,0,0,1,0,0,0,0,1,0,0,1,0],snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
- trap:{label:"Trap",bpm:140,kit:"tr808",kick:[1,0,0,0,0,0,0,1,0,0,1,0,0,1,0,0],snare:[0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],hihat:[1,0,1,0,1,1,1,0,1,0,1,1,1,1,1,0]},
- house:{label:"House",bpm:124,kit:"tr909",kick:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],hihat:[0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0]},
- techno:{label:"Techno",bpm:132,kit:"tr909",kick:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],snare:[0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,1],hihat:[0,0,1,0,0,1,1,0,0,0,1,0,0,1,1,0]},
- eighties:{label:"1980s Pop",bpm:112,kit:"lm2",kick:[1,0,0,0,0,0,1,0,1,0,0,0,0,1,0,0],snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
- reggae:{label:"Reggae",bpm:78,kit:"acoustic",kick:[0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],snare:[0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
- dnb:{label:"D&B",bpm:174,kit:"acoustic",kick:[1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0],snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]}
-};
-let currentKit="acoustic",ctx=null,playing=false,currentStep=0,nextTime=0,timer=null;
-const cache=new Map();
+const $ = id => document.getElementById(id);
 
-function audio(){if(!ctx)ctx=new(window.AudioContext||window.webkitAudioContext)();return ctx}
+const tracks = {
+  kick: Array(16).fill(false),
+  snare: Array(16).fill(false),
+  hihat: Array(16).fill(false)
+};
+
+const kits = {
+  acoustic: {
+    label: "Studio Acoustic",
+    samples: {
+      kick: ["https://oramics.github.io/sampled/DRUMS/pearl-master-studio/samples/kick-01.wav"],
+      snare: [
+        "https://oramics.github.io/sampled/DRUMS/pearl-master-studio/samples/snare-01.wav",
+        "https://oramics.github.io/sampled/DRUMS/pearl-master-studio/samples/snare-02.wav",
+        "https://oramics.github.io/sampled/DRUMS/pearl-master-studio/samples/snare-03.wav"
+      ],
+      hihat: ["https://oramics.github.io/sampled/DRUMS/pearl-master-studio/samples/hihat-closed.wav"]
+    },
+    gains: {kick:.9, snare:.72, hihat:.48}
+  },
+
+  tr808: {
+    label: "Classic TR-808",
+    samples: {
+      kick: ["https://cdn.jsdelivr.net/gh/tidalcycles/sounds-tr808-fischer@main/bd8/BD5050.WAV"],
+      snare: ["https://cdn.jsdelivr.net/gh/tidalcycles/sounds-tr808-fischer@main/sd8/SD5050.WAV"],
+      hihat: ["https://cdn.jsdelivr.net/gh/tidalcycles/sounds-tr808-fischer@main/ch8/CH.WAV"]
+    },
+    gains: {kick:.95, snare:.72, hihat:.48}
+  },
+
+  tr909: {
+    label: "TR-909 Reference",
+    samples: {
+      kick: ["https://oramics.github.io/sampled/DM/TR-909/Detroit/samples/kick.wav"],
+      snare: ["https://oramics.github.io/sampled/DM/TR-909/Detroit/samples/snare.wav"],
+      hihat: ["https://oramics.github.io/sampled/DM/TR-909/Detroit/samples/hihat-closed.wav"]
+    },
+    gains: {kick:.86, snare:.64, hihat:.40}
+  },
+
+  lm2: {
+    label: "LinnDrum LM-2",
+    samples: {
+      kick: ["https://oramics.github.io/sampled/DM/LM-2/samples/kick.wav"],
+      snare: [
+        "https://oramics.github.io/sampled/DM/LM-2/samples/snare-m.wav",
+        "https://oramics.github.io/sampled/DM/LM-2/samples/snare-h.wav"
+      ],
+      hihat: ["https://oramics.github.io/sampled/DM/LM-2/samples/hihat-closed.wav"]
+    },
+    gains: {kick:.86, snare:.68, hihat:.42}
+  }
+};
+
+const presets = {
+  rock:{
+    label:"Basic Rock", bpm:104, kit:"acoustic",
+    kick:[1,0,0,0,0,0,1,0,1,0,0,0,0,0,1,0],
+    snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
+    hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]
+  },
+  funk:{
+    label:"Funk", bpm:100, kit:"acoustic",
+    kick:[1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1],
+    snare:[0,0,0,0,1,0,0,1,0,0,0,0,1,0,1,0],
+    hihat:[1,1,1,1,1,0,1,1,1,1,1,1,1,0,1,1]
+  },
+  disco:{
+    label:"Disco", bpm:120, kit:"acoustic",
+    kick:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],
+    snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
+    hihat:[0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0]
+  },
+  boomBap:{
+    label:"Hip-hop / Boom Bap", bpm:92, kit:"acoustic",
+    kick:[1,0,0,0,0,0,1,0,0,0,0,1,0,0,1,0],
+    snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
+    hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]
+  },
+  trap:{
+    label:"Trap", bpm:140, kit:"tr808",
+    kick:[1,0,0,0,0,0,0,1,0,0,1,0,0,1,0,0],
+    snare:[0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],
+    hihat:[1,0,1,0,1,1,1,0,1,0,1,1,1,1,1,0]
+  },
+  house:{
+    label:"House", bpm:124, kit:"tr909",
+    kick:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],
+    snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
+    hihat:[0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0]
+  },
+  techno:{
+    label:"Techno", bpm:132, kit:"tr909",
+    kick:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],
+    snare:[0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,1],
+    hihat:[0,0,1,0,0,1,1,0,0,0,1,0,0,1,1,0]
+  },
+  eighties:{
+    label:"1980s Pop", bpm:112, kit:"lm2",
+    kick:[1,0,0,0,0,0,1,0,1,0,0,0,0,1,0,0],
+    snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
+    hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]
+  },
+  reggae:{
+    label:"Reggae / One Drop", bpm:78, kit:"acoustic",
+    kick:[0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],
+    snare:[0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],
+    hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]
+  },
+  dnb:{
+    label:"Drum & Bass", bpm:174, kit:"acoustic",
+    kick:[1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0],
+    snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
+    hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]
+  }
+};
+
+let ctx = null;
+let playing = false;
+let currentStep = 0;
+let nextTime = 0;
+let timer = null;
+const cache = new Map();
+
+function audio(){
+  if(!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+  return ctx;
+}
+
 async function loadBuffer(url){
- if(cache.has(url))return cache.get(url);
- const p=fetch(url,{mode:"cors"}).then(r=>{if(!r.ok)throw Error(r.status);return r.arrayBuffer()}).then(b=>audio().decodeAudioData(b.slice(0)));
- cache.set(url,p);return p
+  if(cache.has(url)) return cache.get(url);
+  const p = fetch(url,{mode:"cors"})
+    .then(r=>{
+      if(!r.ok) throw new Error("HTTP "+r.status);
+      return r.arrayBuffer();
+    })
+    .then(b=>audio().decodeAudioData(b.slice(0)));
+  cache.set(url,p);
+  return p;
 }
+
 function fallback(track,time){
- const c=audio();
- if(track==="kick"){
-  const o=c.createOscillator(),g=c.createGain();o.type="sine";o.frequency.setValueAtTime(120,time);o.frequency.exponentialRampToValueAtTime(46,time+.2);
-  g.gain.setValueAtTime(.5,time);g.gain.exponentialRampToValueAtTime(.001,time+.31);o.connect(g).connect(c.destination);o.start(time);o.stop(time+.33)
- }else{
-  const len=Math.floor(c.sampleRate*(track==="snare"?.14:.055)),b=c.createBuffer(1,len,c.sampleRate),d=b.getChannelData(0);
-  for(let i=0;i<len;i++)d[i]=Math.random()*2-1;
-  const s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();s.buffer=b;f.type="highpass";f.frequency.value=track==="snare"?1200:6000;
-  g.gain.setValueAtTime(track==="snare"?.24:.14,time);g.gain.exponentialRampToValueAtTime(.001,time+(track==="snare"?.13:.05));
-  s.connect(f).connect(g).connect(c.destination);s.start(time)
- }
+  const c=audio();
+  if(track==="kick"){
+    const o=c.createOscillator(),g=c.createGain();
+    o.type="sine";
+    o.frequency.setValueAtTime(120,time);
+    o.frequency.exponentialRampToValueAtTime(46,time+.2);
+    g.gain.setValueAtTime(.55,time);
+    g.gain.exponentialRampToValueAtTime(.001,time+.32);
+    o.connect(g).connect(c.destination);
+    o.start(time); o.stop(time+.34);
+  }else{
+    const len=Math.floor(c.sampleRate*(track==="snare"?.15:.06));
+    const b=c.createBuffer(1,len,c.sampleRate),d=b.getChannelData(0);
+    for(let i=0;i<len;i++) d[i]=Math.random()*2-1;
+    const s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();
+    s.buffer=b;
+    f.type="highpass";
+    f.frequency.value=track==="snare"?1200:6000;
+    g.gain.setValueAtTime(track==="snare"?.25:.14,time);
+    g.gain.exponentialRampToValueAtTime(.001,time+(track==="snare"?.14:.055));
+    s.connect(f).connect(g).connect(c.destination);
+    s.start(time);
+  }
 }
+
 async function trigger(track,time){
- const kit=kits[currentKit],list=kit.samples[track],url=list[Math.floor(Math.random()*list.length)];
- try{
-  const b=await loadBuffer(url),c=audio(),s=c.createBufferSource(),g=c.createGain();s.buffer=b;
-  if(currentKit==="acoustic")s.playbackRate.value=.994+Math.random()*.012;
-  g.gain.value=kit.gains[track];s.connect(g).connect(c.destination);s.start(Math.max(time,c.currentTime+.002))
- }catch(e){fallback(track,Math.max(time,audio().currentTime+.002))}
+  const kitKey=$("kitSelect").value;
+  const kit=kits[kitKey];
+  const list=kit.samples[track];
+  const url=list[Math.floor(Math.random()*list.length)];
+  try{
+    const buffer=await loadBuffer(url);
+    const c=audio(),s=c.createBufferSource(),g=c.createGain();
+    s.buffer=buffer;
+    if(kitKey==="acoustic"){
+      s.playbackRate.value=.994+Math.random()*.012;
+    }
+    g.gain.value=kit.gains[track];
+    s.connect(g).connect(c.destination);
+    s.start(Math.max(time,c.currentTime+.002));
+  }catch(e){
+    fallback(track,Math.max(time,audio().currentTime+.002));
+  }
 }
+
+function buildSteps(){
+  document.querySelectorAll(".track").forEach(trackEl=>{
+    const track=trackEl.dataset.track;
+    const row=trackEl.querySelector(".beat-row");
+    for(let beat=0;beat<4;beat++){
+      const group=document.createElement("div");
+      group.className="beat-group";
+      for(let sub=0;sub<4;sub++){
+        const step=beat*4+sub;
+        const b=document.createElement("button");
+        b.type="button";
+        b.className="step";
+        b.dataset.track=track;
+        b.dataset.step=step;
+        b.setAttribute("aria-label",`${track} step ${step+1}`);
+        b.addEventListener("click",()=>{
+          tracks[track][step]=!tracks[track][step];
+          render();
+          $("presetSelect").value="custom";
+        });
+        group.appendChild(b);
+      }
+      row.appendChild(group);
+    }
+  });
+}
+
 function render(){
- document.querySelectorAll(".step").forEach(b=>{const t=b.dataset.track,s=+b.dataset.step;b.classList.toggle("active",tracks[t][s])})
+  document.querySelectorAll(".step").forEach(b=>{
+    const t=b.dataset.track,s=+b.dataset.step;
+    b.classList.toggle("active",tracks[t][s]);
+  });
 }
-function buildGrid(){
- const labels=["1","e","&","a","2","e","&","a","3","e","&","a","4","e","&","a"];
- $("counts").appendChild(Object.assign(document.createElement("div"),{className:"blank"}));
- labels.forEach((x,i)=>{const d=document.createElement("div");d.className="count"+(i%4===0?" main":"");d.textContent=x;$("counts").appendChild(d)});
- document.querySelectorAll("[data-track]").forEach(row=>{
-  const t=row.dataset.track,g=row.querySelector(".track-grid");
-  for(let i=0;i<16;i++){const b=document.createElement("button");b.type="button";b.className="step"+(i%4===0?" beat-start":"");b.dataset.track=t;b.dataset.step=i;
-   b.addEventListener("click",()=>{tracks[t][i]=!tracks[t][i];render();document.querySelectorAll(".chip").forEach(x=>x.classList.remove("active"))});g.appendChild(b)}
- })
-}
-function buildControls(){
- Object.entries(presets).forEach(([k,p])=>{const b=document.createElement("button");b.type="button";b.className="chip";b.textContent=p.label;b.dataset.preset=k;b.onclick=()=>loadPreset(k);$("presetList").appendChild(b)});
- Object.entries(kits).forEach(([k,kit])=>{const b=document.createElement("button");b.type="button";b.className="kit-card";b.dataset.kit=k;b.innerHTML=`<b>${kit.label}</b><small>${kit.sub}</small>`;b.onclick=()=>setKit(k);$("kitList").appendChild(b)})
-}
-function setKit(k){
- currentKit=k;$("kitText").textContent=kits[k].label;
- document.querySelectorAll(".kit-card").forEach(b=>b.classList.toggle("active",b.dataset.kit===k))
-}
-function loadPreset(k){
- const p=presets[k];Object.keys(tracks).forEach(t=>tracks[t]=p[t].map(Boolean));
- $("tempo").value=p.bpm;$("tempoValue").textContent=p.bpm;$("orbTempo").textContent=p.bpm+" BPM";setKit(p.kit);render();
- document.querySelectorAll(".chip").forEach(b=>b.classList.toggle("active",b.dataset.preset===k))
-}
-function secStep(){return(60/+$("tempo").value)/4}
+
+function secPerStep(){ return (60/+$("tempo").value)/4; }
+
 function schedule(step,time){
- ["kick","snare","hihat"].forEach(t=>{if(tracks[t][step])trigger(t,time)});
- const delay=Math.max(0,(time-audio().currentTime)*1000);setTimeout(()=>{if(playing)highlight(step)},delay)
+  ["kick","snare","hihat"].forEach(t=>{
+    if(tracks[t][step]) trigger(t,time);
+  });
+  const delay=Math.max(0,(time-audio().currentTime)*1000);
+  setTimeout(()=>{if(playing) highlight(step)},delay);
 }
-function updateScanline(step){
- const wrap=$("gridWrap"),trackGrid=document.querySelector(".track-grid"),target=document.querySelector(`.step[data-track="kick"][data-step="${step}"]`);
- if(!target)return;
- const wr=wrap.getBoundingClientRect(),tr=target.getBoundingClientRect();
- $("scanline").style.left=(tr.left-wr.left+tr.width/2)+"px";$("scanline").classList.add("show")
-}
+
 function highlight(step){
- document.querySelectorAll(".step.playing").forEach(x=>x.classList.remove("playing"));
- document.querySelectorAll(`.step[data-step="${step}"]`).forEach(x=>x.classList.add("playing"));
- updateScanline(step);
- $("stepText").textContent=`Beat ${Math.floor(step/4)+1} · ${["1","e","&","a"][step%4]}`;
- if(step%4===0){
-  $("beatOrbNum").textContent=Math.floor(step/4)+1;$("beatOrb").classList.add("on");setTimeout(()=>$("beatOrb").classList.remove("on"),95)
- }
+  document.querySelectorAll(".step.playing").forEach(x=>x.classList.remove("playing"));
+  document.querySelectorAll(`.step[data-step="${step}"]`).forEach(x=>x.classList.add("playing"));
+  $("stepText").textContent=`Beat ${Math.floor(step/4)+1} · ${["1","e","&","a"][step%4]}`;
+  $("pulse").classList.add("on");
+  setTimeout(()=>$("pulse").classList.remove("on"),75);
 }
+
 function scheduler(){
- const c=audio();while(nextTime<c.currentTime+.1){schedule(currentStep,nextTime);nextTime+=secStep();currentStep=(currentStep+1)%16}
+  const c=audio();
+  while(nextTime<c.currentTime+.10){
+    schedule(currentStep,nextTime);
+    nextTime+=secPerStep();
+    currentStep=(currentStep+1)%16;
+  }
 }
+
 async function play(){
- const c=audio();if(c.state==="suspended")await c.resume();if(playing)return;
- $("statusText").textContent="LOADING";
- await Promise.allSettled(["kick","snare","hihat"].flatMap(t=>kits[currentKit].samples[t].map(loadBuffer)));
- playing=true;currentStep=0;nextTime=c.currentTime+.06;$("statusText").textContent="PLAYING";scheduler();timer=setInterval(scheduler,25)
+  const c=audio();
+  if(c.state==="suspended") await c.resume();
+  if(playing) return;
+  $("statusText").textContent="LOADING";
+  await Promise.allSettled(
+    ["kick","snare","hihat"].flatMap(t=>kits[$("kitSelect").value].samples[t].map(loadBuffer))
+  );
+  playing=true;
+  currentStep=0;
+  nextTime=c.currentTime+.06;
+  $("statusText").textContent="PLAYING";
+  scheduler();
+  timer=setInterval(scheduler,25);
 }
+
 function stop(){
- playing=false;if(timer){clearInterval(timer);timer=null}currentStep=0;
- document.querySelectorAll(".step.playing").forEach(x=>x.classList.remove("playing"));$("scanline").classList.remove("show");$("statusText").textContent="READY";$("stepText").textContent="Beat 1";$("beatOrbNum").textContent="1"
+  playing=false;
+  if(timer){clearInterval(timer);timer=null}
+  currentStep=0;
+  document.querySelectorAll(".step.playing").forEach(x=>x.classList.remove("playing"));
+  $("statusText").textContent="READY";
+  $("stepText").textContent="Beat 1";
+  $("pulse").classList.remove("on");
 }
-$("tempo").addEventListener("input",()=>{$("tempoValue").textContent=$("tempo").value;$("orbTempo").textContent=$("tempo").value+" BPM";document.querySelectorAll(".chip").forEach(x=>x.classList.remove("active"))});
-document.querySelectorAll("[data-preview]").forEach(b=>b.addEventListener("click",async()=>{const c=audio();if(c.state==="suspended")await c.resume();trigger(b.dataset.preview,c.currentTime+.02)}));
-$("playBtn").onclick=play;$("stopBtn").onclick=stop;
-buildGrid();buildControls();loadPreset("rock");
+
+function loadPreset(key){
+  if(key==="custom") return;
+  const p=presets[key];
+  Object.keys(tracks).forEach(t=>tracks[t]=p[t].map(Boolean));
+  $("tempo").value=p.bpm;
+  $("tempoValue").textContent=p.bpm;
+  $("kitSelect").value=p.kit;
+  render();
+}
+
+function populate(){
+  const ps=$("presetSelect");
+  const custom=document.createElement("option");
+  custom.value="custom";
+  custom.textContent="Custom";
+  ps.appendChild(custom);
+
+  Object.entries(presets).forEach(([key,p])=>{
+    const o=document.createElement("option");
+    o.value=key;
+    o.textContent=p.label;
+    ps.appendChild(o);
+  });
+
+  Object.entries(kits).forEach(([key,k])=>{
+    const o=document.createElement("option");
+    o.value=key;
+    o.textContent=k.label;
+    $("kitSelect").appendChild(o);
+  });
+
+  ps.addEventListener("change",()=>loadPreset(ps.value));
+  $("tempo").addEventListener("input",()=>{
+    $("tempoValue").textContent=$("tempo").value;
+    $("presetSelect").value="custom";
+  });
+
+  document.querySelectorAll("[data-preview]").forEach(b=>{
+    b.addEventListener("click",async()=>{
+      const c=audio();
+      if(c.state==="suspended") await c.resume();
+      trigger(b.dataset.preview,c.currentTime+.02);
+    });
+  });
+}
+
+$("playBtn").addEventListener("click",play);
+$("stopBtn").addEventListener("click",stop);
+
+buildSteps();
+populate();
+$("presetSelect").value="rock";
+loadPreset("rock");
 </script>
 </body>
 </html>
